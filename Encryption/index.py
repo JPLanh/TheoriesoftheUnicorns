@@ -28,4 +28,5 @@ decryptor = cipher.decryptor()
 #must i really comment the rest? it's in reverse..
 ct = decryptor.update(ct)  + decryptor.finalize()
 ct = unpadder.update(ct) + unpadder.finalize()
-print(ct)
+#convert it back from a byte to string
+print(str(ct, 'utf-8'))

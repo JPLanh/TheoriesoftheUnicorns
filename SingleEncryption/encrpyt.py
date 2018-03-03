@@ -17,6 +17,8 @@ def Myencrypt(message, key):
       C = Cipher(algorithms.AES(key), modes.CBC(IV), backend=backend)
 
       return C, IV
+    else:
+      raise ValueError('There is a hacker on the loose trying to steal teh code')
 
 def MyfileEncrypt(filepath): 
   #randomize the key, but not sure if it is suppose to be this way because we will need to reuse it for later
@@ -73,6 +75,8 @@ def MyfileEncrypt(filepath):
   json.dump(topSecretStuff, f)
   #Close.... the json 
   f.close()
+
+  return C, IV, key, fExt
 
 #some hardcoding for now
 MyfileEncrypt('.\\test2\\traktor.jpg')

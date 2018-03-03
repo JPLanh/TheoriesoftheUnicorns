@@ -73,5 +73,6 @@ def MyfileEncrypt(filepath):
   json.dump(topSecretStuff, f)
   #Close.... the json 
   f.close()
-  
+
+#some hardcoding for now
 MyfileEncrypt('.\\test2\\traktor.jpg')

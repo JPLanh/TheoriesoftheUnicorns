@@ -18,11 +18,14 @@ unpadder = padding.PKCS7(128).unpadder()
 cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
 #enables our encrpytion
 encryptor = cipher.encryptor()
-#the b just make it a byte, but this will pad an encrypt it all at once
-ct = encryptor.update(padder.update(b"hi a Simple message, and my name is jimmy")) + encryptor.finalize() + padder.finalize()
+#the b just make it a byte, but this will pad out the message and finalize it just to finish the operation to return the rest of the block
+ct = padder.update(b"hi a Simple message, and my name is jimmy") + padder.finalize()
+#after it has been padded, it will be encrypted.. remember since it's block it need to finish and return the rest
+ct = encryptor.update(ct) + encryptor.finalize()
 print(ct)
 #for the decryption part
 decryptor = cipher.decryptor()
-#take our encrypted message and decrypt it... unpad it and finalize it
-ct = decryptor.update(unpadder.update(ct)) + decryptor.finalize() + unpadder.finalize()
+#must i really comment the rest? it's in reverse..
+ct = decryptor.update(ct)  + decryptor.finalize()
+ct = unpadder.update(ct) + unpadder.finalize()
 print(ct)

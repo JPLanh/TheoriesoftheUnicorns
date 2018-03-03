@@ -1,12 +1,22 @@
 import os
+import glob
+import json
+from base64 import b64encode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
+#enable this when we are ready to encrypt EVERYTHING
+#for file in glob.glob('./*')):
+
 #reads the file as a byte 
 f = open('traktor.jpg', 'rb')
+#break the file name to two parts, the name and extension
+fname, fext = os.path.splitext('traktor.jpg')
 #store the read byte into data
 data = f.read()
+#always close after an open
+f.close()
 
 #===================Some variables needed
 #not sure about this part
@@ -17,13 +27,24 @@ key = os.urandom(32)
 iv = os.urandom(16)
 #initalize the padder because CBC needs a padder
 padder = padding.PKCS7(128).padder()
-#as we pad thing we have to unpad them
-unpadder = padding.PKCS7(128).unpadder()
+
+#dictionary to put into the JSON, unfortunately we can't put byte into json
+#so we have to decode them (convert them to a non-byte
+topSecretStuff = {}
+topSecretStuff["key"] = b64encode(key).decode('utf-8')
+topSecretStuff["iv"] = b64encode(iv).decode('utf-8')
+topSecretStuff["fileName"] = fname
+topSecretStuff["ext"] = fext
+
+#create a json so we can write into it
+f = open('topSecretStuff.json', 'w')
+#put everything from the dictionary into the json
+json.dump(topSecretStuff, f)
+#Close.... the json 
+f.close()
 
 #it's a method to use all the keys to cipher them the first two parameter uses the libraries to implement AES and CBC using our key and IV
 cipher = Cipher(algorithms.AES(key), modes.CBC(iv), backend=backend)
-#for the decryption part
-decryptor = cipher.decryptor()
 #enables our encrpytion
 encryptor = cipher.encryptor()
 
@@ -34,14 +55,8 @@ ct = padder.update(data) + padder.finalize()
 ct = encryptor.update(ct) + encryptor.finalize()
 
 #Create the fake file
-f = open('test.jpg', 'wb')
+filename = fname + fext
+f = open(filename, 'wb')
 #write the encrypted byte into the file
 f.write(ct)
-
-#must i comment these two line? it's just the opposite
-ct = decryptor.update(ct)  + decryptor.finalize()
-ct = unpadder.update(ct) + unpadder.finalize()
-
-#convert it back from a byte and make it into a image
-f = open('test2.jpg', 'wb')
-f.write(ct)
+f.close()

@@ -16,7 +16,20 @@ def Myencrypt(message, key):
       #it's a method to use all the keys to cipher them the first two parameter uses the libraries to implement AES and CBC using our key and IV
       C = Cipher(algorithms.AES(key), modes.CBC(IV), backend=backend)
 
-      return C, IV
+        
+      #initalize the padder because CBC needs a padder
+      padder = padding.PKCS7(128).padder()
+
+      #enables our encrpytion
+      encryptor = C.encryptor()
+
+      #================== Core of it all
+      #This will pad the bytes and then finalize it, as in it will return the rest after the last block is done
+      ct = padder.update(message) + padder.finalize()
+      #after it has been padded, it will be encrypted.. remember since it's block it need to finish and return the rest
+      ct = encryptor.update(ct) + encryptor.finalize()
+
+      return ct, IV
     else:
       raise ValueError('There is a hacker on the loose trying to steal teh code')
 
@@ -36,19 +49,7 @@ def MyfileEncrypt(filepath):
   f.close()
 
   #Run the method to get the cipher and the IV
-  C, IV = Myencrypt(data, key)
-  
-  #initalize the padder because CBC needs a padder
-  padder = padding.PKCS7(128).padder()
-
-  #enables our encrpytion
-  encryptor = C.encryptor()
-
-  #================== Core of it all
-  #This will pad the bytes and then finalize it, as in it will return the rest after the last block is done
-  ct = padder.update(data) + padder.finalize()
-  #after it has been padded, it will be encrypted.. remember since it's block it need to finish and return the rest
-  ct = encryptor.update(ct) + encryptor.finalize()
+  ct, IV = Myencrypt(data, key)
 
   #Create the fake file
   filename = path + "\\" + fName + fExt
@@ -75,4 +76,4 @@ def MyfileEncrypt(filepath):
   #Close.... the json 
   f.close()
 
-  return C, IV, key, fExt
+  return ct, IV, key, fExt

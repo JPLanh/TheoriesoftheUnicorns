@@ -7,7 +7,7 @@ flag = True;
 
 while(flag):
   
-  print("Options:")
+  print("============Encryptor/Decryptor 6882===========")
   print("encrypt [filename]")
   print("decrypt (filename)")
   print("quit")
@@ -18,10 +18,13 @@ while(flag):
     if cmd == "encrypt":
       encrypt.MyfileEncrypt("./" + file)
     elif cmd == "decrypt":
-      decrypt.MyfileDecrypt("./" + file)      
+      decrypt.MyfileDecrypt("./" + file)
+    else:
+      print("invalid command")
   elif (len(getInput.split(" ")) == 1):
      if getInput == "quit":
        flag = False;
        print("Good bye")
   else:
     print("Invalid command")
+  print()

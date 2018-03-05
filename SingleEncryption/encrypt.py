@@ -29,51 +29,61 @@ def Myencrypt(message, key):
       #after it has been padded, it will be encrypted.. remember since it's block it need to finish and return the rest
       ct = encryptor.update(ct) + encryptor.finalize()
 
+      print(" > Encryption complete")
       return ct, IV
     else:
       raise ValueError('There is a hacker on the loose trying to steal teh code')
 
-def MyfileEncrypt(filepath): 
-  #randomize the key, but not sure if it is suppose to be this way because we will need to reuse it for later
-  key = os.urandom(32)
-  #break the file name to two parts, the name and extension
-  fName, fExt = os.path.splitext(os.path.basename(filepath))
-  #get the path of the file
-  path = os.path.dirname(filepath)
+def MyfileEncrypt(filepath):
 
-  #reads the file as a byte 
-  f = open(filepath, 'rb')
-  #store the read byte into data
-  data = f.read()
-  #always close after an open
-  f.close()
+  print(" > Opening " + filepath)
+  if (os.path.isfile(filepath)):
+      #break the file name to two parts, the name and extension
+      fName, fExt = os.path.splitext(os.path.basename(filepath))
+      #get the path of the file
+      path = os.path.dirname(filepath)
+      #randomize the key, but not sure if it is suppose to be this way because we will need to reuse it for later
+      key = os.urandom(32)
 
-  #Run the method to get the cipher and the IV
-  ct, IV = Myencrypt(data, key)
+      #reads the file as a byte 
+      f = open(filepath, 'rb')
+      #store the read byte into data
+      data = f.read()
+      #always close after an open
+      f.close()
 
-  #Create the fake file
-  filename = path + "\\" + fName + fExt
-  f = open(filename, 'wb')
-  #write the encrypted byte into the file
-  f.write(ct)
-  f.close()
+      print(" > Encrypting " + filepath)
+      #Run the method to get the cipher and the IV
+      ct, IV = Myencrypt(data, key)
 
-  #create a json so we can write into it
-  f = open(fName + ".json", 'w')
+      #Create the fake file
+      print(" > Writing ciphertext to file")
+      filename = path + "\\" + fName + fExt
+      f = open(filename, 'wb')
+      #write the encrypted byte into the file
+      f.write(ct)
+      f.close()
 
-  #dictionary that will go into the JSON, unfortunately we can't put byte into json
-  #so we have to decode them (convert them to a non-byte)
-  topSecretStuff = {}
-  topSecretStuff["key"] = b64encode(key).decode('utf-8')
-  topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
-  topSecretStuff["path"] = path
-  topSecretStuff["fileName"] = fName
-  topSecretStuff["ext"] = fExt
+      print(" > Generating top secret sensative json information")
+      #create a json so we can write into it
+      f = open(fName + ".json", 'w')
 
-      
-  #put everything from the list into the json
-  json.dump(topSecretStuff, f)
-  #Close.... the json 
-  f.close()
+      #dictionary that will go into the JSON, unfortunately we can't put byte into json
+      #so we have to decode them (convert them to a non-byte)
+      topSecretStuff = {}
+      topSecretStuff["key"] = b64encode(key).decode('utf-8')
+      topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
+      topSecretStuff["path"] = path
+      topSecretStuff["fileName"] = fName
+      topSecretStuff["ext"] = fExt
 
-  return ct, IV, key, fExt
+          
+      #put everything from the list into the json
+      json.dump(topSecretStuff, f)
+      #Close.... the json 
+      f.close()
+
+      print(" > Encryption Process Completed")
+      return ct, IV, key, fExt
+  else:
+      print(" > Stop hallucinating, there is no " + filepath + " in this directory")

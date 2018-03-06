@@ -24,36 +24,32 @@ def Mydecrypt(cipherText, key, iv):
     return pt
   
 def MyfileDecrypt(filepath):
-  print(" > Locating top secret json information")
+  print(" > Locating magical unicorns")
   #break the file name to two parts, the name and extension
-  fName, fExt = os.path.splitext(os.path.basename(filepath))
-  jread = open(fName + ".json", 'r')
-  jsonStuff = json.load(jread)
-  jread.close()
 
-  filename = jsonStuff['fileName'] + jsonStuff['ext']
-  if filename == fName + fExt:
-    print(" > top secret json information location")
-    print(" > opening " + filepath)
-    f = open(filename, 'rb')
-    #store the read byte into data
-    data = f.read()
-    f.close()
+  if os.path.isfile(filepath + ".unicorn"):
+    print(" > magical unicorn found")
+    jread = open(filepath + ".unicorn", 'r')
+    jsonStuff = json.load(jread)
+    jread.close()
 
+    data = b64decode(jsonStuff["cipher"])
     key = b64decode(jsonStuff["key"])
     iv = b64decode(jsonStuff["iv"])
 
     print(" > Decrypting " + filepath)
     pt = Mydecrypt(data, key, iv)
 
-    print(" > Writing plaintext to file")    
+    print(" > Managing all files")
+    
     #convert it back from a byte and make it into a image
-    f = open(filename, 'wb')
+    f = open(filepath + jsonStuff["ext"], 'wb')
     f.write(pt)
     f.close()
+    os.remove(filepath + ".unicorn")
 
     print(" > Encryption process complete")
 
-    return pt, fExt
+    return pt, jsonStuff["ext"]
   else:
     print("File does not exist, or it wasn't our fault that this file was corrupted because we did not touch it")

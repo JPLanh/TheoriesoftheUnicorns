@@ -8,7 +8,7 @@ flag = True;
 while(flag):
   
   print("============Encryptor/Decryptor 6882===========")
-  print("encrypt [filename]")
+  print("encrypt [filename] + [.ext]")
   print("decrypt (filename)")
   print("quit")
   getInput = input("Command: ")

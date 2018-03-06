@@ -57,24 +57,25 @@ def MyfileEncrypt(filepath):
       ct, IV = Myencrypt(data, key)
 
       #Create the fake file
-      print(" > Writing ciphertext to file")
+      print(" > Managing files")
       filename = path + "\\" + fName + fExt
       f = open(filename, 'wb')
       #write the encrypted byte into the file
       f.write(ct)
       f.close()
 
-      print(" > Generating top secret sensative json information")
+      os.remove(filename)
+
+      print(" > Generating top secret sensative magical unicorn")
       #create a json so we can write into it
-      f = open(fName + ".json", 'w')
+      f = open(fName + ".unicorn", 'w')
 
       #dictionary that will go into the JSON, unfortunately we can't put byte into json
       #so we have to decode them (convert them to a non-byte)
       topSecretStuff = {}
       topSecretStuff["key"] = b64encode(key).decode('utf-8')
       topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
-      topSecretStuff["path"] = path
-      topSecretStuff["fileName"] = fName
+      topSecretStuff["cipher"] = b64encode(ct).decode('utf-8')
       topSecretStuff["ext"] = fExt
 
           

@@ -12,5 +12,5 @@ Execute Main.py and simply type the command upon prompted.
 Note: decrypt command does not need the extension, it only requires the filename as it will help the program to determine if we encrypted it.
 
 ## Authors
-Jimmy Lanh
-Kelly Hall
+### Jimmy Lanh
+### Kelly Hall

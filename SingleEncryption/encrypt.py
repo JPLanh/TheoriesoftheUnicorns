@@ -1,24 +1,25 @@
 import os
 import glob
 import json
+import constant
 from base64 import b64encode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 
 def Myencrypt(message, key):
-    if (len(key) == 32):
+    if (len(key) == constant.KEY_BYTE_REQUIREMENT):
       #not sure about this part
       backend = default_backend()
       #randomize the iv, but not sure if it suppose to be this way because we will need to reuse it for later
-      IV = os.urandom(16)
+      IV = os.urandom(constant.IV_BYTE)
   
       #it's a method to use all the keys to cipher them the first two parameter uses the libraries to implement AES and CBC using our key and IV
       C = Cipher(algorithms.AES(key), modes.CBC(IV), backend=backend)
 
         
       #initalize the padder because CBC needs a padder
-      padder = padding.PKCS7(128).padder()
+      padder = padding.PKCS7(constant.PADDING_BLOCK_SIZE).padder()
 
       #enables our encrpytion
       encryptor = C.encryptor()
@@ -43,7 +44,7 @@ def MyfileEncrypt(filepath):
       #get the path of the file
       path = os.path.dirname(filepath)
       #randomize the key, but not sure if it is suppose to be this way because we will need to reuse it for later
-      key = os.urandom(32)
+      key = os.urandom(constant.KEY_BYTE)
 
       #reads the file as a byte 
       f = open(filepath, 'rb')

@@ -1,6 +1,7 @@
 import os
 import glob
 import json
+import constant
 from base64 import b64decode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
@@ -15,7 +16,7 @@ def Mydecrypt(cipherText, key, iv):
     #for the decryption part
     decryptor = cipher.decryptor()
     #as we pad thing we have to unpad them
-    unpadder = padding.PKCS7(128).unpadder()
+    unpadder = padding.PKCS7(constant.PADDING_BLOCK_SIZE).unpadder()
 
     pt = decryptor.update(cipherText)  + decryptor.finalize()
     pt = unpadder.update(pt) + unpadder.finalize()

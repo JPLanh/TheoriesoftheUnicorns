@@ -9,7 +9,7 @@ while(flag):
   
   print("============Encryptor/Decryptor 6882===========")
   print("encrypt [filename] + [.ext]")
-  print("decrypt (filename)")
+  print("decrypt (.unicorn filename)")
   print("quit")
   getInput = input("Command: ")
 

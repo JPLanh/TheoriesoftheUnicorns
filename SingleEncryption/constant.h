@@ -1,2 +1,0 @@
-KEY_LENGTH = 32;
-IV_LENGTH = 16;

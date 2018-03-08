@@ -9,14 +9,12 @@ from cryptography.hazmat.backends import default_backend
 
 def Myencrypt(message, key):
     if (len(key) == constant.KEY_BYTE_REQUIREMENT):
-      #not sure about this part
       backend = default_backend()
-      #randomize the iv, but not sure if it suppose to be this way because we will need to reuse it for later
+      #Randomize the IV with the specified IV_BYTE
       IV = os.urandom(constant.IV_BYTE)
   
-      #it's a method to use all the keys to cipher them the first two parameter uses the libraries to implement AES and CBC using our key and IV
+      #method to use all the keys to cipher them, the first two parameter uses the hazmat's libraries to implement AES and CBC using our key and IV
       C = Cipher(algorithms.AES(key), modes.CBC(IV), backend=backend)
-
         
       #initalize the padder because CBC needs a padder
       padder = padding.PKCS7(constant.PADDING_BLOCK_SIZE).padder()
@@ -33,6 +31,7 @@ def Myencrypt(message, key):
       print(" > Encryption complete")
       return ct, IV
     else:
+      #Intentional mispell for the fun
       raise ValueError('There is a hacker on the loose trying to steal teh code')
 
 def MyfileEncrypt(filepath):
@@ -41,37 +40,29 @@ def MyfileEncrypt(filepath):
   if (os.path.isfile(filepath)):
       #break the file name to two parts, the name and extension
       fName, fExt = os.path.splitext(os.path.basename(filepath))
-      #get the path of the file
-      path = os.path.dirname(filepath)
-      #randomize the key, but not sure if it is suppose to be this way because we will need to reuse it for later
+      #randomize the key
       key = os.urandom(constant.KEY_BYTE)
 
       #reads the file as a byte 
       f = open(filepath, 'rb')
-      #store the read byte into data
+      #store the read byte into the data variable
       data = f.read()
       #always close after an open
       f.close()
 
       print(" > Encrypting " + filepath)
-      #Run the method to get the cipher and the IV
+      #Run the module to get the cipher and the IV
       ct, IV = Myencrypt(data, key)
 
       #Create the fake file
       print(" > Managing files")
-      filename = path + "\\" + fName + fExt
-      f = open(filename, 'wb')
-      #write the encrypted byte into the file
-      f.write(ct)
-      f.close()
-
       os.remove(filename)
 
       print(" > Generating top secret sensative magical unicorn")
-      #create a json so we can write into it
+      #create a file with our custom extension so we can write into it
       f = open(fName + ".unicorn", 'w')
 
-      #dictionary that will go into the JSON, unfortunately we can't put byte into json
+      #dictionary that will be put into the json and into the fake file, unfortunately we can't put byte into json
       #so we have to decode them (convert them to a non-byte)
       topSecretStuff = {}
       topSecretStuff["key"] = b64encode(key).decode('utf-8')
@@ -79,8 +70,7 @@ def MyfileEncrypt(filepath):
       topSecretStuff["cipher"] = b64encode(ct).decode('utf-8')
       topSecretStuff["ext"] = fExt
 
-          
-      #put everything from the list into the json
+      #put everything from the json into the file
       json.dump(topSecretStuff, f)
       #Close.... the json 
       f.close()

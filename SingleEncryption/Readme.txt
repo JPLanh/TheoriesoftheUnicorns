@@ -1,8 +1,12 @@
-@Author: Jimmy Lanh
-         Kelly Hall
-         
-As according to the File Encryption, this tries to strictly follow the professor's instruction
-To provide some sort of security from mistake happening, i've created a main file to help with
-navigation
+# Encrpytor / Decryptor 
 
-This will create a json with ther exact naming just incase we decide to encrypt more than one files
+## Synopsis
+Using only hazmat we are to implement a ransomware that encrypts a chosen file with CBC (AES_MODE), and then at a later time decrypt the same file back to it's original file
+
+## Instructions
+Execute Main.py and simply type the command upon prompted.
+### encrypt (filename) + .(ext)
+
+##Authors
+Jimmy Lanh
+Kelly Hall

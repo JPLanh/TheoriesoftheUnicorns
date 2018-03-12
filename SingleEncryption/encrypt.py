@@ -4,8 +4,9 @@ import json
 import constant
 from base64 import b64encode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import padding. serialization
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import padding, OAEP, hashes
 
 def Myencrypt(message, key):
     if (len(key) == constant.KEY_BYTE_REQUIREMENT):
@@ -79,3 +80,24 @@ def MyfileEncrypt(filepath):
       return ct, IV, key, fExt
   else:
       print(" > Stop hallucinating, there is no " + filepath + " in this directory")
+
+def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
+    C, IV, key, ext = MyfileEncrypt(filepath)
+    
+    #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
+    RSACipher = RSA_publickey.encrypt(
+         key,
+         padding.OAEP(
+             mgf=padding.MGF1(algorithm=hashes.SHA256()),
+             algorithm=hashes.SHA256(),
+             label=None
+         )
+    )
+
+    return RSACipher, C, IV, ext
+    
+      #init RSA public key encryption object
+      #load pem publickey from the RSA_publickey_filepath
+      #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
+      #result will be RSACipher
+      #return (RSACipher, C, IV, ext)

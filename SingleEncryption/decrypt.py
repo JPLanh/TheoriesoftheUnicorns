@@ -6,6 +6,7 @@ from base64 import b64decode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives.asymmetric import padding, OAEP, hashes
 
 def Mydecrypt(cipherText, key, iv):
     #returns a default backend object
@@ -69,3 +70,22 @@ def MyfileDecrypt(filepath):
   #else if file does not exist
   else:
     print("File does not exist, or it wasn't our fault that this file was corrupted because we did not touch it")
+
+
+#def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):   
+    
+    #RSAPlain = RSA_Privatekey_filepath.decrypt(
+    #     RSACipher,
+    #     padding.OAEP(
+    #         mgf=padding.MGF1(algorithm=hashes.SHA256()),
+    #         algorithm=hashes.SHA256(),
+    #         label=None
+    #     )
+    #)
+    #return RSAPlain, C, IV, ext
+    
+    
+      #do inverse:
+      #MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath)
+      #which does exactly the inverse of the above 
+      #generate the decrypted file using your previous decryption methods

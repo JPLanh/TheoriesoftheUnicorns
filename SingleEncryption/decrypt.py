@@ -72,17 +72,17 @@ def MyfileDecrypt(filepath):
     print("File does not exist, or it wasn't our fault that this file was corrupted because we did not touch it")
 
 
-#def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):   
+def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):   
+    RSAPlain = RSA_Privatekey_filepath.decrypt(
+         RSACipher,
+         padding.OAEP(
+             mgf=padding.MGF1(algorithm=hashes.SHA256()),
+             algorithm=hashes.SHA256(),
+             label=None
+         )
+    )
     
-    #RSAPlain = RSA_Privatekey_filepath.decrypt(
-    #     RSACipher,
-    #     padding.OAEP(
-    #         mgf=padding.MGF1(algorithm=hashes.SHA256()),
-    #         algorithm=hashes.SHA256(),
-    #         label=None
-    #     )
-    #)
-    #return RSAPlain, C, IV, ext
+    return RSAPlain, C, IV, ext
     
     
       #do inverse:

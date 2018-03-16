@@ -4,9 +4,11 @@ import json
 import constant
 from base64 import b64encode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding. serialization
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
-from cryptography.hazmat.primitives.asymmetric import padding, OAEP, hashes
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.padding import PKCS7
+
 
 def Myencrypt(message, key):
     if (len(key) == constant.KEY_BYTE_REQUIREMENT):
@@ -56,8 +58,8 @@ def MyfileEncrypt(filepath):
       ct, IV = Myencrypt(data, key)
 
       #Create the fake file
-      print(" > Managing files")
-      os.remove(filename)
+      #print(" > Managing files")
+      #os.remove(filename)
 
       print(" > Generating top secret sensative magical unicorn")
       #create a file with our custom extension so we can write into it
@@ -82,10 +84,16 @@ def MyfileEncrypt(filepath):
       print(" > Stop hallucinating, there is no " + filepath + " in this directory")
 
 def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
-    C, IV, key, ext = MyfileEncrypt(filepath)
+    C, IV, key, ext = MyfileEncrypt("./" + filepath)
+    
+    from Crypto.PublicKey import RSA
+    f=open(RSA_Publickey_filepath, 'r')
+    RSA_Publickey=RSA.importKey(f.read())
     
     #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
-    RSACipher = RSA_publickey.encrypt(
+    from cryptography.hazmat.primitives.asymmetric import padding
+    from cryptography.hazmat.primitives.asymmetric.padding import OAEP    
+    RSACipher = RSA_Publickey.encrypt(
          key,
          padding.OAEP(
              mgf=padding.MGF1(algorithm=hashes.SHA256()),

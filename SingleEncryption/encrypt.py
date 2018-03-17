@@ -4,8 +4,13 @@ import json
 import constant
 from base64 import b64encode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.padding import PKCS7
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives.asymmetric.padding import OAEP    
+from Crypto.PublicKey import RSA
 
 def Myencrypt(message, key):
     if (len(key) == constant.KEY_BYTE_REQUIREMENT):
@@ -54,28 +59,31 @@ def MyfileEncrypt(filepath):
       #Run the module to get the cipher and the IV
       ct, IV = Myencrypt(data, key)
 
-      #Create the fake file
-      print(" > Managing files")
-      os.remove(filename)
-
-      print(" > Generating top secret sensative magical unicorn")
-      #create a file with our custom extension so we can write into it
-      f = open(fName + ".unicorn", 'w')
-
-      #dictionary that will be put into the json and into the fake file, unfortunately we can't put byte into json
-      #so we have to decode them (convert them to a non-byte)
-      topSecretStuff = {}
-      topSecretStuff["key"] = b64encode(key).decode('utf-8')
-      topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
-      topSecretStuff["cipher"] = b64encode(ct).decode('utf-8')
-      topSecretStuff["ext"] = fExt
-
-      #put everything from the json into the file
-      json.dump(topSecretStuff, f)
-      #Close.... the json 
-      f.close()
-
       print(" > Encryption Process Completed")
       return ct, IV, key, fExt
   else:
       print(" > Stop hallucinating, there is no " + filepath + " in this directory")
+
+def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
+    C, IV, key, ext = MyfileEncrypt("./" + filepath)
+    
+    f=open(RSA_Publickey_filepath, 'r')
+    RSA_Publickey=RSA.importKey(f.read())
+    
+    #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
+    RSACipher = RSA_Publickey.encrypt(
+         key,
+         padding.OAEP(
+             mgf=padding.MGF1(algorithm=hashes.SHA256()),
+             algorithm=hashes.SHA256(),
+             label=None
+         )
+    )
+
+    return RSACipher, C, IV, ext
+    
+      #init RSA public key encryption object
+      #load pem publickey from the RSA_publickey_filepath
+      #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
+      #result will be RSACipher
+      #return (RSACipher, C, IV, ext)

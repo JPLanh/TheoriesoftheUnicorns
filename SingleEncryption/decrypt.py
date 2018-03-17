@@ -4,8 +4,12 @@ import json
 import constant
 from base64 import b64decode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives import padding, hashes
 from cryptography.hazmat.backends import default_backend
+from cryptography.hazmat.primitives import padding
+from cryptography.hazmat.primitives.asymmetric.padding import OAEP
+from cryptography.hazmat.primitives.padding import PKCS7
+from Crypto.PublicKey import RSA
 
 def Mydecrypt(cipherText, key, iv):
     #returns a default backend object
@@ -19,7 +23,7 @@ def Mydecrypt(cipherText, key, iv):
     decryptor = cipher.decryptor()
 
     #returns an unpadding instance because since we padded in encryption we must unpad
-    unpadder = padding.PKCS7(constant.PADDING_BLOCK_SIZE).unpadder()w
+    unpadder = padding.PKCS7(constant.PADDING_BLOCK_SIZE).unpadder()
 
     #pt (plaintext) is set to the decrypted cipher and  updated until everything is fed into context
     #and then finalized so that this object can no longer be used
@@ -46,22 +50,13 @@ def MyfileDecrypt(filepath):
     
     #separate JSon data into their respective variables
     data = b64decode(jsonStuff["cipher"])
-    key = b64decode(jsonStuff["key"])
+    RSACipher = b64decode(jsonStuff["key"])
     iv = b64decode(jsonStuff["iv"])
+    RSA_Privatekey_filepath=os.getcwd() + "/unicorn"
 
-    #announce decryptionn
-    print(" > Decrypting " + filepath)
-    #run mydecrypt with JSon variables and get pt
-    pt = Mydecrypt(data, key, iv)
-
-    print(" > Managing all files")
+    #Decrypt the RSACipher
+    MyRSADecrypt(RSACipher, data, iv, RSA_PrivateKey_filepath)
     
-    #convert it back from a byte and make it into a image
-    f = open(filepath + jsonStuff["ext"], 'wb')
-    f.write(pt)
-    f.close()
-    os.remove(filepath + ".unicorn")
-
     #announce completion of encryption and return pt and variable associated with 'ext'
     print(" > Encryption process complete")
     return pt, jsonStuff["ext"]
@@ -69,3 +64,37 @@ def MyfileDecrypt(filepath):
   #else if file does not exist
   else:
     print("File does not exist, or it wasn't our fault that this file was corrupted because we did not touch it")
+
+
+def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
+    
+    f=open(RSA_Privatekey_filepath, 'r')
+    RSA_Privatekey=RSA.importKey(f.read())
+    
+    key = RSA_Privatekey.decrypt(
+         RSACipher,
+         padding.OAEP(
+             mgf=padding.MGF1(algorithm=hashes.SHA256()),
+             algorithm=hashes.SHA256(),
+             label=None
+         )
+    )
+
+    #announce decryptionn
+    print(" > Decrypting " + filepath)
+    #run mydecrypt with JSon variables and get pt
+    pt = Mydecrypt(C, key, IV)
+
+    print(" > Managing all files")
+    
+    #convert it back from a byte and make it into a image
+    f = open(filepath + ext, 'wb')
+    f.write(pt)
+    f.close()
+    os.remove(filepath + ".unicorn")
+    
+        
+      #do inverse:
+      #MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath)
+      #which does exactly the inverse of the above 
+      #generate the decrypted file using your previous decryption methods

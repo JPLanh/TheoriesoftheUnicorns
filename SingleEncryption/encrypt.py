@@ -1,16 +1,14 @@
 import os
 import glob
-import json
 import constant
-from base64 import b64encode
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.padding import PKCS7
-from cryptography.hazmat.primitives.asymmetric import padding
-from cryptography.hazmat.primitives.asymmetric.padding import OAEP    
-from Crypto.PublicKey import RSA
+from cryptography.hazmat.primitives import asymmetric
+from cryptography.hazmat.primitives import serialization
+
 
 def Myencrypt(message, key):
     if (len(key) == constant.KEY_BYTE_REQUIREMENT):
@@ -66,24 +64,24 @@ def MyfileEncrypt(filepath):
 
 def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
     C, IV, key, ext = MyfileEncrypt("./" + filepath)
-    
-    f=open(RSA_Publickey_filepath, 'r')
-    RSA_Publickey=RSA.importKey(f.read())
+        
+    f=open(RSA_Publickey_filepath, 'rb')
+    private_key = serialization.load_pem_private_key(
+        f.read(),
+        password=b"unicorn",
+        backend=default_backend()
+    )
+    public_key = private_key.public_key()
     
     #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
-    RSACipher = RSA_Publickey.encrypt(
-         key,
-         padding.OAEP(
-             mgf=padding.MGF1(algorithm=hashes.SHA256()),
+    RSACipher = public_key.encrypt(
+         key,         
+         asymmetric.padding.OAEP(
+             mgf=asymmetric.padding.MGF1(algorithm=hashes.SHA256()),
              algorithm=hashes.SHA256(),
              label=None
          )
-    )
+    ) 
 
     return RSACipher, C, IV, ext
     
-      #init RSA public key encryption object
-      #load pem publickey from the RSA_publickey_filepath
-      #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
-      #result will be RSACipher
-      #return (RSACipher, C, IV, ext)

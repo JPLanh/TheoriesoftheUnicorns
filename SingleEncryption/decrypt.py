@@ -7,9 +7,9 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import padding, hashes
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import padding
-from cryptography.hazmat.primitives.asymmetric.padding import OAEP
+from cryptography.hazmat.primitives import asymmetric
 from cryptography.hazmat.primitives.padding import PKCS7
-from Crypto.PublicKey import RSA
+from cryptography.hazmat.primitives import serialization
 
 def Mydecrypt(cipherText, key, iv):
     #returns a default backend object
@@ -44,46 +44,20 @@ def MyfileDecrypt(filepath):
   #if yes, read the file, load the JSon content and close the file
   if os.path.isfile(filepath + ".unicorn"):
     print(" > magical unicorn found")
-    jread = open(filepath + ".unicorn", 'r')
-    jsonStuff = json.load(jread)
-    jread.close()
+    jread = open(filepath + ".unicorn", 'rb')
     
     #separate JSon data into their respective variables
+    jsonStuff = json.load(jread)
+    jread.close()
     data = b64decode(jsonStuff["cipher"])
     RSACipher = b64decode(jsonStuff["key"])
-    iv = b64decode(jsonStuff["iv"])
-    RSA_Privatekey_filepath=os.getcwd() + "/unicorn"
+    IV = b64decode(jsonStuff["iv"])
+    ext = jsonStuff["ext"]
+    
+    RSA_Privatekey_filepath=os.getcwd() + "/unicornkey"
 
     #Decrypt the RSACipher
-    MyRSADecrypt(RSACipher, data, iv, RSA_PrivateKey_filepath)
-    
-    #announce completion of encryption and return pt and variable associated with 'ext'
-    print(" > Encryption process complete")
-    return pt, jsonStuff["ext"]
-  
-  #else if file does not exist
-  else:
-    print("File does not exist, or it wasn't our fault that this file was corrupted because we did not touch it")
-
-
-def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
-    
-    f=open(RSA_Privatekey_filepath, 'r')
-    RSA_Privatekey=RSA.importKey(f.read())
-    
-    key = RSA_Privatekey.decrypt(
-         RSACipher,
-         padding.OAEP(
-             mgf=padding.MGF1(algorithm=hashes.SHA256()),
-             algorithm=hashes.SHA256(),
-             label=None
-         )
-    )
-
-    #announce decryptionn
-    print(" > Decrypting " + filepath)
-    #run mydecrypt with JSon variables and get pt
-    pt = Mydecrypt(C, key, IV)
+    pt, ext = MyRSADecrypt(RSACipher, data, IV, ext, RSA_Privatekey_filepath)
 
     print(" > Managing all files")
     
@@ -93,8 +67,33 @@ def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
     f.close()
     os.remove(filepath + ".unicorn")
     
-        
-      #do inverse:
-      #MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath)
-      #which does exactly the inverse of the above 
-      #generate the decrypted file using your previous decryption methods
+    #announce completion of encryption and return pt and variable associated with 'ext'
+    print(" > Encryption process complete")
+  
+  #else if file does not exist
+  else:
+    print("File does not exist, or it wasn't our fault that this file was corrupted because we did not touch it")
+
+
+def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
+    f=open(RSA_Privatekey_filepath, 'rb')
+    private_key = serialization.load_pem_private_key(
+        f.read(),
+        password=b'unicorn',
+        backend=default_backend()
+    )
+    
+    key = private_key.decrypt(
+         RSACipher,
+         asymmetric.padding.OAEP(
+             mgf=asymmetric.padding.MGF1(algorithm=hashes.SHA256()),
+             algorithm=hashes.SHA256(),
+             label=None
+         )
+    )
+
+    #announce decryptionn
+    print(" > Decrypting filepath")
+    pt = Mydecrypt(C, key, IV)
+    
+    return pt, ext

@@ -54,7 +54,7 @@ def MyfileDecrypt(filepath):
     IV = b64decode(jsonStuff["iv"])
     ext = jsonStuff["ext"]
     
-    RSA_Privatekey_filepath=os.getcwd() + "/unicornkey"
+    RSA_Privatekey_filepath=os.getcwd() + "/unicornkey.pem"
 
     #Decrypt the RSACipher
     pt, ext = MyRSADecrypt(RSACipher, data, IV, ext, RSA_Privatekey_filepath)

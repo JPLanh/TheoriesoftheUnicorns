@@ -72,7 +72,9 @@ def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
         backend=default_backend()
     )
     public_key = private_key.public_key()
-    
+
+    #print(f.read())
+ 
     #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
     RSACipher = public_key.encrypt(
          key,         

@@ -1,0 +1,48 @@
+Encrypting
+1. Pad
+2. Encrypt
+3. encrypt the key (RSA)
+4. Create magical unicorn file
+
+Decrypting
+1. Load magical unicorn file
+2. Decrypt the Key (RSA)
+3. Decrypt
+4. Unpad
+
+Encrypting
+1. Get Input
+2. Load PublicKey
+3. Inside RSAEncrypt
+  4. Inside MyfileEncrypt
+    5. Get File
+    6. Generate Key
+    7. inside Myencrypt
+      8. Generate IV
+      9. Generate the Cipher algorithm using key and IV
+      10. Generate the Encryptor/Padder
+      11. Pad
+      12. Encrypt
+    13. cipherText and IV are returned
+  14. ciphertext, IV key, and Extension are returned
+17. encrypt the key
+18. Return encrypted key (RSACipher), CipherText, IV, and extension
+19. Insert Data into Json
+20. Create magical unicorn file
+
+Decrypting
+1. Get Input
+2. Inside MyfileDecrypt
+  3. Load magical unicorn file
+  4. Extract data from Json
+  5. Inside MyRSADecrypt
+    6. Read the Private key
+    7. inport the private key
+    8. decrypt the Key
+    9. Inside Mydecrypt
+      10. Generate algorithm from the imported key and IV
+      11. Generate the Decryptor/Unpadder
+      12. Decrypt
+      13. Unpad
+    14. Plaintext is returned
+  15. Create file

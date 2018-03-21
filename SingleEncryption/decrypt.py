@@ -54,7 +54,7 @@ def MyfileDecrypt(filepath):
     IV = b64decode(jsonStuff["iv"])
     ext = jsonStuff["ext"]
     
-    RSA_Privatekey_filepath=os.getcwd() + "/unicornkey.pem"
+    RSA_Privatekey_filepath=os.getcwd() + "/private.pem"
 
     #Decrypt the RSACipher
     pt, ext = MyRSADecrypt(RSACipher, data, IV, ext, RSA_Privatekey_filepath)
@@ -79,7 +79,7 @@ def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
     f=open(RSA_Privatekey_filepath, 'rb')
     private_key = serialization.load_pem_private_key(
         f.read(),
-        password=b'unicorn',
+        password=None,
         backend=default_backend()
     )
     

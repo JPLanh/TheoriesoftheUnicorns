@@ -1,5 +1,5 @@
 import os
-import glob
+from base64 import b64decode
 import constant
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.primitives import hashes
@@ -8,7 +8,6 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.primitives.padding import PKCS7
 from cryptography.hazmat.primitives import asymmetric
 from cryptography.hazmat.primitives import serialization
-
 
 def Myencrypt(message, key):
     if (len(key) == constant.KEY_BYTE_REQUIREMENT):
@@ -66,14 +65,10 @@ def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
     C, IV, key, ext = MyfileEncrypt("./" + filepath)
         
     f=open(RSA_Publickey_filepath, 'rb')
-    private_key = serialization.load_pem_private_key(
+    public_key = serialization.load_pem_public_key(
         f.read(),
-        password=b"unicorn",
         backend=default_backend()
     )
-    public_key = private_key.public_key()
-
-    #print(f.read())
  
     #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
     RSACipher = public_key.encrypt(

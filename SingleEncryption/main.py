@@ -61,7 +61,6 @@ while(flag):
                 key_size=2048,
                 backend=default_backend()
             )
-
             #serialize the key
             print(" > Key has been found, imagining it into existance (generating private.pem file)")
             pem = private_key.private_bytes(
@@ -69,22 +68,18 @@ while(flag):
                 format=serialization.PrivateFormat.TraditionalOpenSSL,
                 encryption_algorithm=serialization.NoEncryption()
                 )
-            
             #open private.pem key using 'write bytes' and write it
             #close key file
             f=open("private.pem", 'wb')
             f.write(pem)
             f.close()
             
-            #use private key to generate public key
-            #serialize key
             print(" > Creating the physical form of the key (public .pem)")
             public_key = private_key.public_key()
             pem = public_key.public_bytes(
                 encoding=serialization.Encoding.PEM,
                 format=serialization.PublicFormat.SubjectPublicKeyInfo
             )
-            
             #open public.pem key using 'write bytes' and write
             #close public key file
             f=open("public.pem", 'wb')

@@ -65,9 +65,6 @@ def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
     #call MyfileEncrypt to get varables, C, IV, Key, ext
     #and encrypt file as per method
     C, IV, key, ext = MyfileEncrypt("./" + filepath)
-        
-    #open the RSA_Publickey_filepath using 'read bytes'
-    #read and load public key
     f=open(RSA_Publickey_filepath, 'rb')
     public_key = serialization.load_pem_public_key(
         f.read(),

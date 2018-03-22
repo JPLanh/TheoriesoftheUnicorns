@@ -44,7 +44,9 @@ def MyfileDecrypt(filepath):
   #if yes, read the file, load the JSon content and close the file
   if os.path.isfile(filepath + ".unicorn"):
     print(" > magical unicorn found")
-    jread = open(filepath + ".unicorn", 'rb')
+
+    jread = open(filepath + ".unicorn")
+
     
     #separate JSon data into their respective variables
     jsonStuff = json.load(jread)
@@ -76,6 +78,10 @@ def MyfileDecrypt(filepath):
 
 
 def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
+
+    #open RSA_Privatekey_filepath with 'read bytes'
+    #load private key and read it
+    #in our case there is no password for private key
     f=open(RSA_Privatekey_filepath, 'rb')
     private_key = serialization.load_pem_private_key(
         f.read(),
@@ -83,6 +89,8 @@ def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
         backend=default_backend()
     )
     
+    #use private key to decrypt the RSACipher using OAEP padding
+
     key = private_key.decrypt(
          RSACipher,
          asymmetric.padding.OAEP(
@@ -92,6 +100,7 @@ def MyRSADecrypt(RSACipher, C, IV, ext, RSA_Privatekey_filepath):
          )
     )
 
+    #call Mydecrypt using C, key, and IV to finally receive the original file again
     #announce decryptionn
     print(" > Decrypting filepath")
     pt = Mydecrypt(C, key, IV)

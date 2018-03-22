@@ -62,8 +62,9 @@ def MyfileEncrypt(filepath):
       print(" > Stop hallucinating, there is no " + filepath + " in this directory")
 
 def MyRSAEncrypt(filepath, RSA_Publickey_filepath):
+    #call MyfileEncrypt to get varables, C, IV, Key, ext
+    #and encrypt file as per method
     C, IV, key, ext = MyfileEncrypt("./" + filepath)
-        
     f=open(RSA_Publickey_filepath, 'rb')
     public_key = serialization.load_pem_public_key(
         f.read(),

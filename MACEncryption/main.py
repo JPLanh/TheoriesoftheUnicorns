@@ -3,10 +3,76 @@ import sys
 import encrypt
 import decrypt
 import json
+import constant
 from base64 import b64encode
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
+
+
+def generateKey():
+    try:
+        #try to load open a private key
+        private_key = open(constant.PRIVATE_PEM, "rb")
+    except:
+        print("Unable to find any pair of unicorns")
+        #public exponent 65537 is the largest known prime number making it large enought to avoid attacks
+        #key size is set to 2048 bits
+        #backend implements RSABackend
+        print(" > Searching for key to the lands of the unicorn")
+        private_key = rsa.generate_private_key(
+            public_exponent=65537,
+            key_size=2048,
+            backend=default_backend()
+        )
+        #serialize the key
+        print(" > Key has been found, imagining it into existance (generating private.pem file)")
+        pem = private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()
+            )
+        #open private.pem key using 'write bytes' and write it
+        #close key file
+        f=open("private.pem", 'wb')
+        f.write(pem)
+        f.close()
+            
+        print(" > Creating the physical form of the key (public .pem)")
+        public_key = private_key.public_key()
+        pem = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        #open public.pem key using 'write bytes' and write
+        #close public key file
+        f=open("public.pem", 'wb')
+        f.write(pem)
+        f.close()
+            
+    try:
+        public_key = open(constant.PUBLIC_PEM, "rb")
+    except:
+        #if a private key exist without a public key
+        private_key_load = serialization.load_pem_private_key(
+            private_key.read(),
+            password=None,
+            backend=default_backend()
+        )
+        print("Current private unicorn does not have any mate :C, lets go find one")
+        print(" > Creating the physical form of the key (public .pem)")
+        public_key = private_key_load.public_key()
+        pem = public_key.public_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PublicFormat.SubjectPublicKeyInfo
+        )
+        #open public.pem key using 'write bytes' and write
+        #close public key file
+        f=open("public.pem", 'wb')
+        f.write(pem)
+        f.close()
+           
+    print(" > Now go find some unicorns")
 
 flag = True;
 
@@ -16,6 +82,7 @@ while(flag):
     print("encrypt [filename] + [.ext]")
     print("decrypt (.unicorn filename)")
     print("create unicorn")
+    print("search pair")
     print("quit")
     getInput = input("Command: ")
     
@@ -51,43 +118,7 @@ while(flag):
         elif cmd == "decrypt":
             decrypt.MyfileDecryptMAC("./" + file)
         elif cmd == "create":
-
-            #if create command, create a private key
-            #public exponent 65537 is the largest known prime number making it large enought to avoid attacks
-            #key size is set to 2048 bits
-            #backend implements RSABackend
-            print(" > Searching for key to the lands of the unicorn")
-            private_key = rsa.generate_private_key(
-                public_exponent=65537,
-                key_size=2048,
-                backend=default_backend()
-            )
-            #serialize the key
-            print(" > Key has been found, imagining it into existance (generating private.pem file)")
-            pem = private_key.private_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PrivateFormat.TraditionalOpenSSL,
-                encryption_algorithm=serialization.NoEncryption()
-                )
-            #open private.pem key using 'write bytes' and write it
-            #close key file
-            f=open("private.pem", 'wb')
-            f.write(pem)
-            f.close()
-            
-            print(" > Creating the physical form of the key (public .pem)")
-            public_key = private_key.public_key()
-            pem = public_key.public_bytes(
-                encoding=serialization.Encoding.PEM,
-                format=serialization.PublicFormat.SubjectPublicKeyInfo
-            )
-            #open public.pem key using 'write bytes' and write
-            #close public key file
-            f=open("public.pem", 'wb')
-            f.write(pem)
-            f.close()
-            
-            print(" > Now go find some unicorns")
+            generateKey()
         else: #if user inputs anything but given commands:
             print("invalid command")
     elif (len(getInput.split(" ")) == 1):

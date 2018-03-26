@@ -45,10 +45,11 @@ def MyfileDecryptMAC(filepath):
 
   #check if file exists
   #if yes, read the file, load the JSon content and close the file
-  if os.path.isfile(filepath + ".unicorn"):
+  if os.path.isfile(filepath):
     print(" > magical unicorn found")
 
-    jread = open(filepath + ".unicorn")
+    jread = open(filepath)
+    fName, fExt = os.path.splitext(os.path.basename(filepath))
 
     
     #separate JSon data into their respective variables
@@ -60,7 +61,7 @@ def MyfileDecryptMAC(filepath):
     tag = b64decode(jsonStuff["tag"])
     ext = jsonStuff["ext"]
 
-    RSA_Privatekey_filepath=os.getcwd() + "/private.pem"
+    RSA_Privatekey_filepath=os.getcwd() + "/" + constant.PRIVATE_PEM
 
     #Decrypt the RSACipher
     pt, ext = MyRSADecryptMAC(RSACipher, data, IV, tag, ext, RSA_Privatekey_filepath)
@@ -71,10 +72,10 @@ def MyfileDecryptMAC(filepath):
         print(" > Managing all files")
         
         #convert it back from a byte and make it into a image
-        f = open(filepath + ext, 'wb')
+        f = open(fName + ext, 'wb')
         f.write(pt)
         f.close()
-        os.remove(filepath + ".unicorn")
+        os.remove(filepath)
         
         #announce completion of encryption and return pt and variable associated with 'ext'
         print(" > Encryption process complete")

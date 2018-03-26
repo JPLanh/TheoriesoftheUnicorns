@@ -2,5 +2,5 @@ KEY_BYTE = 32
 IV_BYTE = 16
 KEY_BYTE_REQUIREMENT = 32
 PADDING_BLOCK_SIZE = 128
-PRIVATE_PEM = "private.PEM"
-PUBLIC_PEM = "public.PEM"
+PRIVATE_PEM = "private.pem"
+PUBLIC_PEM = "public.pem"

@@ -34,7 +34,7 @@ def generateKey():
             )
         #open private.pem key using 'write bytes' and write it
         #close key file
-        f=open("private.pem", 'wb')
+        f=open(constant.PRIVATE_PEM, 'wb')
         f.write(pem)
         f.close()
             
@@ -46,7 +46,7 @@ def generateKey():
         )
         #open public.pem key using 'write bytes' and write
         #close public key file
-        f=open("public.pem", 'wb')
+        f=open(constant.PUBLIC_PEM, 'wb')
         f.write(pem)
         f.close()
             
@@ -68,11 +68,38 @@ def generateKey():
         )
         #open public.pem key using 'write bytes' and write
         #close public key file
-        f=open("public.pem", 'wb')
+        f=open(constant.PUBLIC_PEM, 'wb')
         f.write(pem)
         f.close()
            
     print(" > Now go find some unicorns")
+
+def encryptionProcess(fileName):
+    RSA_Publickey_filepath=os.getcwd() + "/" + constant.PUBLIC_PEM
+    RSACipher, C, IV, tag, ext = encrypt.MyRSAEncryptMAC(fileName, RSA_Publickey_filepath)
+    fName = os.path.splitext(os.path.basename(fileName))
+    
+    print(" > Managing files")
+    #Remove the initial file
+    os.remove(fileName)
+
+    print(" > Generating top secret sensative magical unicorn")
+    #create a file with our custom extension so we can write into it
+    f = open((fName[0] + ".unicorn"), 'w')
+
+    #dictionary that will be put into the json and into the fake file, unfortunately we can't put byte into json
+    #so we have to decode them (convert them to a non-byte)
+    topSecretStuff = {}
+    topSecretStuff["key"] = b64encode(RSACipher).decode('utf-8')
+    topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
+    topSecretStuff["tag"] = b64encode(tag).decode('utf-8')
+    topSecretStuff["cipher"] = b64encode(C).decode('utf-8')
+    topSecretStuff["ext"] = ext
+
+    #put everything from the json into the file
+    json.dump(topSecretStuff, f)
+    #Close.... the json 
+    f.close()    
 
 flag = True;
 
@@ -80,42 +107,34 @@ while(flag):
   
     print("============Encryptor/Decryptor 6882===========")
     print("encrypt [filename] + [.ext]")
+    print("encrypt all")
     print("decrypt (.unicorn filename)")
+    print("decrypt all")
     print("create unicorn")
     print("quit")
     getInput = input("Command: ")
     
     if len(getInput.split(" ")) == 2:
         cmd,file = getInput.split(" ")
-        if cmd == "encrypt":            
-            RSA_Privatekey_filepath=os.getcwd() + "/public.pem"
-            RSACipher, C, IV, tag, ext = encrypt.MyRSAEncryptMAC(file, RSA_Privatekey_filepath)
-            fName = os.path.splitext(os.path.basename(file))
-            
-            print(" > Managing files")
-            #Remove the initial file
-            os.remove(file)
-
-            print(" > Generating top secret sensative magical unicorn")
-            #create a file with our custom extension so we can write into it
-            f = open((fName[0] + ".unicorn"), 'w')
-
-            #dictionary that will be put into the json and into the fake file, unfortunately we can't put byte into json
-            #so we have to decode them (convert them to a non-byte)
-            topSecretStuff = {}
-            topSecretStuff["key"] = b64encode(RSACipher).decode('utf-8')
-            topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
-            topSecretStuff["tag"] = b64encode(tag).decode('utf-8')
-            topSecretStuff["cipher"] = b64encode(C).decode('utf-8')
-            topSecretStuff["ext"] = ext
-
-            #put everything from the json into the file
-            json.dump(topSecretStuff, f)
-            #Close.... the json 
-            f.close()
-
+        if cmd == "encrypt":
+            if (file == "all"):
+                file_List = os.listdir()
+                for x in file_List:
+                    if x not in ("constant.py", "encrypt.py", "decrypt.py", "main.py",
+                                 constant.PRIVATE_PEM, constant.PUBLIC_PEM):
+                        if (not x.endswith('.unicorn')):
+                            if (os.path.isfile(x)):
+                                encryptionProcess(x)
+            else:
+                encryptionProcess(file)
         elif cmd == "decrypt":
-            decrypt.MyfileDecryptMAC("./" + file)
+            if file == "all":
+                file_List = os.listdir()
+                for x in file_List:
+                    if x.endswith('.unicorn'):
+                        decrypt.MyfileDecryptMAC("./" + x)
+            else:
+                decrypt.MyfileDecryptMAC("./" + file +".unicorn")
         elif cmd == "create":
             generateKey()
         else: #if user inputs anything but given commands:

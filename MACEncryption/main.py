@@ -82,7 +82,6 @@ while(flag):
     print("encrypt [filename] + [.ext]")
     print("decrypt (.unicorn filename)")
     print("create unicorn")
-    print("search pair")
     print("quit")
     getInput = input("Command: ")
     

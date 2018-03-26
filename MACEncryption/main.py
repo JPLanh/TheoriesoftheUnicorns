@@ -106,12 +106,16 @@ flag = True;
 while(flag):
   
     print("============Encryptor/Decryptor 6882===========")
-    print("encrypt [filename] + [.ext]")
-    print("encrypt all")
-    print("decrypt (.unicorn filename)")
-    print("decrypt all")
-    print("create unicorn")
-    print("quit")
+    print("Current Directory: " + os.getcwd())
+    print("============Encryptor/Decryptor 6882===========")
+    print("< ls")
+    print("< cd [director/path]")
+    print("< encrypt [filename] + [.ext]")
+    print("< encrypt all")
+    print("< decrypt (.unicorn filename)")
+    print("< decrypt all")
+    print("< create unicorn")
+    print("< quit")
     getInput = input("Command: ")
     
     if len(getInput.split(" ")) == 2:
@@ -137,6 +141,8 @@ while(flag):
                 decrypt.MyfileDecryptMAC("./" + file +".unicorn")
         elif cmd == "create":
             generateKey()
+        elif cmd == "cd":
+            os.chdir(file)
         else: #if user inputs anything but given commands:
             print("invalid command")
     elif (len(getInput.split(" ")) == 1):
@@ -144,6 +150,10 @@ while(flag):
             flag = False;
             print("Good bye")
             #sys.exit()
+        elif getInput == "ls":
+            file_List = os.listdir()
+            for x in file_List:
+                print("[] " + x)
     else:
          print("Invalid command")
     print()

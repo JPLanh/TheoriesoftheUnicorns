@@ -107,7 +107,11 @@ def MyRSADecryptMAC(RSACipher, C, IV, tag, ext, RSA_Privatekey_filepath):
              label=None
          )
     )
-
+    
+        #Credit for having some sort of division between the encoded key and the HMAC key is given to
+        #Zhipeng Mei https://github.com/ZhipengMei/Computer-Security/blob/master/3_RSA_File/src/HTTP%20RSA%20File%20(CECS%20378%20GroupNumberOne).ipynb
+        #Encoding the concatonated key was easy, but once the key gets over to the decrypt it was hard to figure out where the two key
+        #are suppose to be split at.
     #because we concatoned the two key during out RSAEncryption phase, we had to split
     #it up so we can get both the key and the HMACKey
     keySet = key.split("unicorn".encode())

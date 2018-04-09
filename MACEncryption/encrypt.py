@@ -69,29 +69,34 @@ def MyfileEncryptMAC(filepath):
   except FileNotFoundError:
       print(" > Stop hallucinating, there is no " + filepath + " in this directory")    
       return None, None, None, None, None, None
+  except:
+      print("Unable to locate any unicorn, go find some unicorn first")
+      return
+      return None, None, None, None, None, None
     
 def MyRSAEncryptMAC(filepath, RSA_Publickey_filepath):
     #call MyfileEncrypt to get varables, C, IV, Key, ext
     #and encrypt file as per method
     C, IV, tag, EncKey, HMACKey, ext = MyfileEncryptMAC("./" + filepath)
     if C != None:
-        f=open(RSA_Publickey_filepath, 'rb')
-        public_key = serialization.load_pem_public_key(
-            f.read(),
-            backend=default_backend()
-        )
-     
-        #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
-        #Credit for having some sort of division between the encoded key and the HMAC key is given to
-        #Zhipeng Mei https://github.com/ZhipengMei/Computer-Security/blob/master/3_RSA_File/src/HTTP%20RSA%20File%20(CECS%20378%20GroupNumberOne).ipynb
-        #It was difficult to figure out where the HMAC key began and where did the Encoded key end
-        RSACipher = public_key.encrypt(
-             EncKey+"unicorn".encode()+HMACKey,         
-             asymmetric.padding.OAEP(
-                 mgf=asymmetric.padding.MGF1(algorithm=hashes.SHA256()),
-                 algorithm=hashes.SHA256(),
-                 label=None
-             )
-        ) 
+        try:
+            f=open(RSA_Publickey_filepath, 'rb')
+            public_key = serialization.load_pem_public_key(
+                f.read(),
+                backend=default_backend()
+            )
+         
+            #encrpyt key variable ("key") using RSA publickey in OAEP padding mode
+            RSACipher = public_key.encrypt(
+                 EncKey+HMACKey,         
+                 asymmetric.padding.OAEP(
+                     mgf=asymmetric.padding.MGF1(algorithm=hashes.SHA256()),
+                     algorithm=hashes.SHA256(),
+                     label=None
+                 )
+            ) 
 
-        return RSACipher, C, IV, tag, ext
+            return RSACipher, C, IV, tag, ext
+        except:
+            print("Unable to locate any unicorn, go find some unicorn first")
+            return None, None, None, None, None

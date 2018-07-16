@@ -1,0 +1,3 @@
+Certificate of the domain expires after 90 days, you would have to ssh into the server and do `sudo certbot renew` and renew unicorntheoriest.me.
+Start node by doing `node index.js`
+To start mongodb `sudo systemctl start mongod`
